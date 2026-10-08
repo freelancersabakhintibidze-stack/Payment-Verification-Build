@@ -1,0 +1,423 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ------------------------------------------------------------------ */
+/*  Aether Arena · editorial ledger system                             */
+/*  Warm paper, printer's ink, ledger red. Zero radii, zero shadows.   */
+/* ------------------------------------------------------------------ */
+
+:root {
+  --paper: #f4f3ef;
+  --surface: #edece7;
+  --mist: #faf9f6;
+  --ink: #262521;
+  --ink-deep: #171613;
+  --body: #45423b;
+  --secondary: #565349;
+  --muted: #77736a;
+  --line: #d6d3ca;
+  --line-soft: #e5e3db;
+  --line-strong: #a3a094;
+  --accent: #c00000;
+  --accent-dark: #9d0000;
+  --deep: #750000;
+  --night: #12110f;
+  --hall: #1d1c19;
+  --ok: #1e6b45;
+  --warn: #9a6b00;
+  --fail: #c00000;
+  --grid: rgba(38, 37, 33, 0.05);
+}
+
+.dark {
+  --paper: #0d0c0b;
+  --surface: #161513;
+  --mist: #121110;
+  --ink: #f0eee8;
+  --ink-deep: #fbfaf7;
+  --body: #c9c5ba;
+  --secondary: #a5a198;
+  --muted: #85817a;
+  --line: #34322d;
+  --line-soft: #232220;
+  --line-strong: #5b5850;
+  --accent: #e02020;
+  --accent-dark: #b81a1a;
+  --deep: #4d0000;
+  --night: #080807;
+  --hall: #0f0e0d;
+  --ok: #3d9970;
+  --warn: #c99a2e;
+  --fail: #e04040;
+  --grid: rgba(240, 238, 232, 0.045);
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-mist: var(--mist);
+  --color-ink: var(--ink);
+  --color-inkdeep: var(--ink-deep);
+  --color-body: var(--body);
+  --color-secondary: var(--secondary);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-lineSoft: var(--line-soft);
+  --color-lineStrong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accentDark: var(--accent-dark);
+  --color-deep: var(--deep);
+  --color-night: var(--night);
+  --color-hall: var(--hall);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-fail: var(--fail);
+
+  --font-serif: var(--font-fraunces), "Iowan Old Style", Georgia, serif;
+  --font-mono: var(--font-plex-mono), "SFMono-Regular", Consolas, monospace;
+
+  --container-shell: 78rem;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Base                                                               */
+/* ------------------------------------------------------------------ */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--paper);
+    color: var(--body);
+    font-family: var(--font-serif);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Zero rounded corners, zero shadows. Enforced globally, by design. */
+  *,
+  *::before,
+  *::after {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: #ffffff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  a,
+  button {
+    transition:
+      color 160ms ease,
+      background-color 160ms ease,
+      border-color 160ms ease,
+      opacity 160ms ease;
+  }
+
+  input,
+  select,
+  textarea {
+    transition:
+      border-color 160ms ease,
+      background-color 160ms ease,
+      color 160ms ease;
+  }
+
+  /* Data never lies about alignment: tabular numerals for figures */
+  .tnum,
+  table,
+  dd {
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--surface);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--line-strong);
+    border: 2px solid var(--surface);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--muted);
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Components                                                         */
+/* ------------------------------------------------------------------ */
+
+@layer components {
+  /* Uppercase mono micro-label, the system's connective tissue */
+  .label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+
+  .shell {
+    margin-inline: auto;
+    width: 100%;
+    max-width: var(--container-shell);
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 640px) {
+    .shell {
+      padding-inline: 1.5rem;
+    }
+  }
+
+  .display-xl {
+    font-family: var(--font-serif);
+    font-size: clamp(2.75rem, 7.5vw, 6.25rem);
+    line-height: 0.97;
+    letter-spacing: -0.03em;
+    font-weight: 400;
+  }
+
+  .display-lg {
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 4.5vw, 3.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    font-weight: 400;
+  }
+
+  .display-md {
+    font-family: var(--font-serif);
+    font-size: clamp(1.5rem, 3.2vw, 2.35rem);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+  }
+
+  .lede {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+  }
+
+  .section-pad {
+    padding-block: clamp(4.5rem, 9vw, 9.5rem);
+  }
+
+  /* Red oversized initial letter on major headlines */
+  .drop-cap::first-letter {
+    color: var(--accent);
+    font-size: 1.08em;
+    line-height: 0.9;
+    margin-right: 0.015em;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--accent);
+    color: #ffffff;
+    padding: 0.875rem 1.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+  }
+  .btn-primary:hover {
+    background: var(--accent-dark);
+  }
+  .btn-primary:disabled {
+    background: var(--line-strong);
+    cursor: not-allowed;
+  }
+
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    border: 1px solid var(--line);
+    color: var(--ink);
+    padding: 0.875rem 1.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    background: transparent;
+    cursor: pointer;
+  }
+  .btn-outline:hover {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .btn-outline:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .btn-outline-light {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    color: #ffffff;
+    padding: 0.875rem 1.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+  }
+  .btn-outline-light:hover {
+    background: #ffffff;
+    color: var(--deep);
+    border-color: #ffffff;
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    color: var(--ink);
+    padding: 0.5rem 0.875rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+  }
+  .btn-ghost:hover {
+    border-color: var(--ink);
+  }
+  .btn-ghost:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  /* Architectural hairline rule */
+  .rule {
+    border-top: 1px solid var(--line);
+  }
+
+  /* Framed surface, used for cards and figures */
+  .frame {
+    position: relative;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+
+  /* Ledger field: mono input, sharp, printed */
+  .field {
+    width: 100%;
+    border: 1px solid var(--line);
+    background: var(--mist);
+    color: var(--ink);
+    padding: 0.625rem 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .field:focus {
+    border-color: var(--ink);
+    outline: none;
+  }
+  .field::placeholder {
+    color: var(--muted);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border: 1px solid var(--line);
+    padding: 0.3125rem 0.625rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    white-space: nowrap;
+  }
+  .chip:hover {
+    border-color: var(--ink);
+  }
+
+  /* Fine background grid used inside framed figures only */
+  .blueprint {
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  /* Skeleton shimmer for loading rows */
+  .skeleton {
+    position: relative;
+    overflow: hidden;
+    background: var(--line-soft);
+  }
+  .skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.45),
+      transparent
+    );
+    animation: shimmer 1.6s infinite;
+  }
+  .dark .skeleton::after {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.06),
+      transparent
+    );
+  }
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Reduced motion                                                     */
+/* ------------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+}

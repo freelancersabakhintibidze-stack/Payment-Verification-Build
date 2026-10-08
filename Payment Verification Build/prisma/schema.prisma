@@ -1,0 +1,66 @@
+// Aether Arena · data model (PostgreSQL, primary schema)
+// Zero-setup SQLite variant lives in prisma/schema.sqlite.prisma.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Status {
+  PENDING
+  CONFIRMING
+  VERIFIED
+  FAILED
+  DELIVERED
+}
+
+model Payment {
+  id             String    @id @default(uuid())
+  orderId        String    @unique
+  amount         Decimal   @db.Decimal(20, 9)
+  senderWallet   String    @default("")
+  txHash         String?   @unique
+  status         Status    @default(PENDING)
+  verifiedAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Verification context
+  paymentAddress String
+  memo           String
+  asset          String    @default("SOL")
+  mint           String?
+  simulated      Boolean   @default(false)
+  expiresAt      DateTime
+  lastCheckedAt  DateTime?
+  checks         Int       @default(0)
+
+  // Delivery
+  deliveredAt    DateTime?
+  deliveredTo    String?
+
+  deliveryLogs   DeliveryLog[]
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([status, createdAt])
+}
+
+// One row per delivery attempt, kept for audit and retry logic
+model DeliveryLog {
+  id        String   @id @default(uuid())
+  paymentId String
+  payment   Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  attempt   Int      @default(1)
+  channel   String // telegram | webhook
+  status    String // SUCCESS | RETRY | FAILED | SKIPPED
+  detail    String?
+  createdAt DateTime @default(now())
+
+  @@index([paymentId])
+  @@index([createdAt])
+}

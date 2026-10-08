@@ -1,0 +1,65 @@
+// Aether Arena · data model (SQLite, zero-setup variant)
+// Same tables as the PostgreSQL schema; status is a validated string
+// because SQLite does not support Prisma enums. Generate + push with:
+//   npx prisma generate --schema prisma/schema.sqlite.prisma
+//   npx prisma db push --schema prisma/schema.sqlite.prisma
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/aether-prisma-sqlite"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Status values: PENDING | CONFIRMING | VERIFIED | FAILED | DELIVERED
+// (SQLite does not support Prisma enums. The app validates through
+// src/lib/status.ts and Zod, so the string is always one of the five.)
+model Payment {
+  id             String    @id @default(uuid())
+  orderId        String    @unique
+  amount         Decimal
+  senderWallet   String
+  txHash         String?   @unique
+  status         String    @default("PENDING")
+  verifiedAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Verification context
+  paymentAddress String
+  memo           String
+  asset          String    @default("SOL")
+  mint           String?
+  simulated      Boolean   @default(false)
+  expiresAt      DateTime
+  lastCheckedAt  DateTime?
+  checks         Int       @default(0)
+
+  // Delivery
+  deliveredAt    DateTime?
+  deliveredTo    String?
+
+  deliveryLogs   DeliveryLog[]
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([status, createdAt])
+}
+
+// One row per delivery attempt, kept for audit and retry logic
+model DeliveryLog {
+  id         String   @id @default(uuid())
+  paymentId  String
+  payment    Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  attempt    Int      @default(1)
+  channel    String   // telegram | webhook
+  status     String   // SUCCESS | RETRY | FAILED | SKIPPED
+  detail     String?
+  createdAt  DateTime @default(now())
+
+  @@index([paymentId])
+  @@index([createdAt])
+}
